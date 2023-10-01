@@ -1,0 +1,33 @@
+version: '3.8'
+services:
+  db:
+    container_name: db
+    image: postgres:14.1-alpine
+    restart: always
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - '5432:5432'
+    volumes:
+      - db:/var/lib/postgresql/data
+  back:
+    container_name: back
+    restart: always
+    build: ../QuesterApi
+    ports:
+      - 3000:3000
+  front:
+    container_name: front
+    restart: always
+    build: ../Quester
+    ports:
+      - 5000:5000
+    environment:
+      BACK_HOSTNAME: back
+      BACK_URL: http://back:3000
+
+volumes:
+  db:
+    driver: local
