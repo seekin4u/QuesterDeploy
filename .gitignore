@@ -1,0 +1,5 @@
+terraform.tfvars
+terraform.tfstate
+terraform.tfstate.backup
+.terraform/providers/registry.terraform.io/hetznercloud/hcloud/1.43.0/windows_386/terraform-provider-hcloud_v1.43.0.exe
+.terraform.lock.hcl

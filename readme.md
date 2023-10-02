@@ -16,6 +16,9 @@ docker-hetzner-api sWFTS0BImw5iOYjWoMpf3XnShe69uZ0AgLMMLkFGAbdodEQ2IUFiIWhPMCQDO
 Для пуша имаджа в докер хаб - тегнуть локальный имадж как какую-то версию с названием `questerbe` или `questerfe` и запушить в `nordsofskyrim` репозитории в докерхабе
 https://hub.docker.com/repository/docker/nordsofskyrim/questerbe
 https://hub.docker.com/repository/docker/nordsofskyrim/questerfe
+docker tag 0d8e269243a4f79c4ba8b9a74059a10c0ba19aa7bd7728956ce9a4b5a4800223 [local-image-name]
 docker tag [local-image-name]:latest [dockerhubusername]/[quester(be|fe)]:[newversion]
-docker tag questerdeploy-front:latest nordsofskyrim/questerfe:1.0 
-docker push nordsofskyrim/questerfe:1.0
+
+docker tag 0d8e269243a4f79c4ba8b9a74059a10c0ba19aa7bd7728956ce9a4b5a4800223 questerfe
+docker tag questerfe:latest nordsofskyrim/questerfe:2.1 
+docker push nordsofskyrim/questerfe:2.1

@@ -1,0 +1,70 @@
+#cloud-config
+users:
+  - name: devops
+    groups: users, admin
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    shell: /bin/bash
+    ssh_authorized_keys:
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCxV9G9MPfUcsREuAA+e1hMM3GZmgroAXrQbFW/j7n0tqP8AgCc9n6SjC7lmeKyQZXhf3woOSTL3rCi1QC/Ou7ZNl13R9srrJm3j25fRJ1dQXmjFA0BvJ0hMdrJTm4zvUsr9+CA1tn0JVfAi6azw0urDaomg95ILs0/8yz57GwtTgGKGuBF5Yz9yEHBiXW8rDOKOfTeIz2+D87UPqsuv0eWwIMU+vvaWB17u1fCeLsA9QvN8F1O68AU62pn0I/sA1a7Rzv84k7Xgy7Xnj9XvM935P2+1gNPa3crfPXt2x0mDJEfGmV3ErDA3zlD6INZUfqWY3aMg1XyFlLcyNS58phS7EQabV0RruTXx4y15yDOfN/Z/zRMuSLGxMKl9xI/rhrqOJdnBQGv6b+EmRCIJFpyv91HyGATlWas/Z/PkSBwdYCMlMZXvHjoZ9Msc2zdNAKNQEXF1jWF9KM4gKpcfJKC3wNBrxn+DKSialE1rlffWJg/vK0NDZccJFZITsdCMiR2Pi8zIAQsVJD1gBZk8UrHM7+9Q4xeoq8/80JJsWJ+YMX9ManZg9d3scPmlBMJIC9KXMoPYxhqNnTjs8CiSW+E3EioOyplup7y0FkBtgcRDZh8MwP+qUspEMlYOVWjp/NQXqzIKKUCmdxEycCoXX656sOWpvqMQify3ZIrHoqMVQ== imm@MaxSauceMain
+
+packages:
+  - nginx
+  - fail2ban
+  - ufw
+  - jq
+  - docker.io
+  - docker-compose
+package_update: true
+package_upgrade: true
+
+write_files:
+  - owner: www-data:www-data
+    path: /etc/nginx/sites-available/default
+    content: |
+      server {
+        listen 80;
+        server_name default;
+        location /964d72e72d053d501f2949969849b96c/ {
+          proxy_pass http://localhost:5000/;
+          proxy_http_version 1.1;
+          proxy_set_header Upgrade $http_upgrade;
+          proxy_set_header Connection keep-alive;
+          proxy_set_header Host $host;
+          proxy_cache_bypass $http_upgrade;
+        }
+
+        location /964d72e72d053d501f2949969849b96c/create {
+          proxy_pass http://localhost:3000/api/create;
+          proxy_http_version 1.1;
+          proxy_set_header Upgrade $http_upgrade;
+          proxy_set_header Connection keep-alive;
+          proxy_set_header Host $host;
+          proxy_cache_bypass $http_upgrade;
+        }
+
+      }
+
+runcmd:
+  - systemctl enable nginx
+  - systemctl start nginx
+  - ufw allow 'Nginx Full'
+  - printf "[sshd]\nenabled = true\nbanaction = iptables-multiport" > /etc/fail2ban/jail.local
+  - systemctl enable fail2ban
+  - systemctl start fail2ban
+  - ufw allow 'OpenSSH'
+  - ufw enable
+  - sed -ie '/^PermitRootLogin/s/^.*$/PermitRootLogin no/' /etc/ssh/sshd_config
+  - sed -ie '/^PasswordAuthentication/s/^.*$/PasswordAuthentication no/' /etc/ssh/sshd_config
+  - sed -ie '/^X11Forwarding/s/^.*$/X11Forwarding no/' /etc/ssh/sshd_config
+  - sed -ie '/^#MaxAuthTries/s/^.*$/MaxAuthTries 2/' /etc/ssh/sshd_config
+  - sed -ie '/^#AllowTcpForwarding/s/^.*$/AllowTcpForwarding no/' /etc/ssh/sshd_config
+  - sed -ie '/^#AllowAgentForwarding/s/^.*$/AllowAgentForwarding no/' /etc/ssh/sshd_config
+  - sed -ie '/^#AuthorizedKeysFile/s/^.*$/AuthorizedKeysFile .ssh/authorized_keys/' /etc/ssh/sshd_config
+  - sed -i '$a AllowUsers devops' /etc/ssh/sshd_config
+  - systemctl restart ssh
+  - rm /var/www/html/*
+  - apt install docker.io -y
+  - apt install docker-compose -y
+  - cd /var/tmp
+  - docker-compose up -d
+  - systemctl restart nginx

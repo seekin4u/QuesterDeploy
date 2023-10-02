@@ -1,4 +1,4 @@
-version: '3.8'
+version: '3.3'
 services:
   db:
     container_name: db
@@ -15,13 +15,13 @@ services:
   back:
     container_name: back
     restart: always
-    build: ../QuesterApi
+    image: nordsofskyrim/questerbe:2.0
     ports:
       - 3000:3000
   front:
     container_name: front
     restart: always
-    build: ../Quester
+    image: nordsofskyrim/questerfe:2.1
     ports:
       - 5000:5000
     environment:
