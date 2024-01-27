@@ -30,15 +30,22 @@ resource "hcloud_server" "web_quester" {
 
   connection {
     type        = "ssh"
-    timeout     = "2m"
-    user        = "root"
+    timeout     = "4m"
+    user        = "devops"
     private_key = file("~/quester")
     host        = self.ipv4_address
   }
 
   provisioner "file" {
     source = "docker-compose.yml"
-    destination = "/var/tmp/docker-compose.yml"#не ставится сюда в папку, ставится в файл app
+    destination = "/var/tmp/docker-compose.yml"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "cd /var/tmp",
+      "docker-compose up -d",
+    ]
   }
 
 #добавить nginx

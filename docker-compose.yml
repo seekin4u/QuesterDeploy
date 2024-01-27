@@ -5,23 +5,24 @@ services:
     image: postgres:14.1-alpine
     restart: always
     environment:
-      - POSTGRES_DB=postgres
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=quest_db
+      - POSTGRES_USER=quest_user
+      - POSTGRES_PASSWORD=quest_password
+      - POSTGRES_INITDB_ARGS="--auth-host=scram-sha-256"
     ports:
-      - '5432:5432'
+      - 5432:5432
     volumes:
       - db:/var/lib/postgresql/data
   back:
     container_name: back
     restart: always
-    image: nordsofskyrim/questerbe:2.0
+    image: nordsofskyrim/questerbe:2.1
     ports:
       - 3000:3000
   front:
     container_name: front
     restart: always
-    image: nordsofskyrim/questerfe:2.1
+    image: nordsofskyrim/questerfe:2.5
     ports:
       - 5000:5000
     environment:
