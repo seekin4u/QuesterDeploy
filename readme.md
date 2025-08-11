@@ -8,7 +8,7 @@ $ docker plugin disable hetzner
 $ docker plugin set hetzner apikey=<apikey>
 $ docker plugin enable hetzner
 ```
-//docker-hetzner-api sWFTS0BImw5iOYjWoMpf3XnShe69uZ0AgLMMLkFGAbdodEQ2IUFiIWhPMCQDOigs
+//docker-hetzner-api (ключу два года и он давно протух)
 
 //Волюмы пошли в пизду, мерзкая дрянь на хетзнере. Осталось доделать обращение к локальной БД и сохранение хранилища локально в волюм но в отдельный
 
